@@ -18,6 +18,10 @@ black = "^24.8.0"
 isort = "^5.13.2"
 mypy = "^1.11.2"
 
+
+[tool.poetry.group.dev.dependencies]
+pytest-cov = "^6.0.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

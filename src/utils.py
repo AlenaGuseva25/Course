@@ -2,8 +2,8 @@ import datetime
 import logging
 import json
 import pandas as pd
+from pathlib import Path
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def set_greeting() -> str:
     """Функция формирует строку приветствия и вносит значение по ключу greeting"""
@@ -23,10 +23,6 @@ def set_greeting() -> str:
 
     return greeting
 
-
-if __name__ == "__main__":
-    greeting_message = set_greeting()
-    print(greeting_message)
 
 
 def set_cards_dicts(exsel_file_path):
@@ -68,21 +64,41 @@ def set_cards_dicts(exsel_file_path):
     return {"cards": cards_summary}
 
 
-if __name__ == "__main__":
-    excel_file_path = (r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx")
 
-    summary = set_cards_dicts(excel_file_path)
-    print(summary)
-
-
-
-
-
-
-
-def set_five_trans_dicts():
+def set_five_trans_dicts(excel_file_path):
     """Функция формирует ТОП 5 словарей (по сумме платежа) по ключу top_transactions"""
-    pass
+    df = pd.read_excel(excel_file_path)
+
+    top5_transactions = []
+
+    # Сбор всех транзакций в список
+    for index, row in df.iterrows():
+        date = str(row["Дата платежа"])  # Используем правильное название столбца
+        amount = float(row["Сумма операции"])  # Используем правильное название столбца
+        category = str(row["Категория"])  # Используем правильное название столбца
+        description = str(row["Описание"])  # Используем правильное название столбца
+
+        info_top5 = {
+            "date": date,
+            "amount": amount,
+            "category": category,
+            "description": description
+        }
+
+        top5_transactions.append(info_top5)
+
+    # Сортировка транзакций по сумме и выбор ТОП 5
+    top5_transactions = sorted(top5_transactions, key=lambda x: x["amount"], reverse=True)[:5]
+
+    return top5_transactions
+
+
+
+
+
+
+
+
 
 
 def set_currency_rates_dicts():
