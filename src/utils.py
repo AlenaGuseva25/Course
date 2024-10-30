@@ -2,10 +2,12 @@ import datetime
 import logging
 import json
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def set_greeting() -> str:
     """Функция формирует строку приветствия и вносит значение по ключу greeting"""
     current_hour = datetime.datetime.now().hour
+    greeting = ""
 
     if 0 <= current_hour < 6:
         greeting = "Доброй ночи"
@@ -16,14 +18,14 @@ def set_greeting() -> str:
     else:
         greeting = "Добрый вечер"
 
+    logging.info(f"Текущее время: {current_hour} часов. Выбрано приветствие: '{greeting}'")
+
     return greeting
 
 
 if __name__ == "__main__":
     greeting_message = set_greeting()
     print(greeting_message)
-
-
 
 
 def set_cards_dicts():
