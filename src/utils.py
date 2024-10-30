@@ -2,7 +2,7 @@ import datetime
 import logging
 import json
 import pandas as pd
-from pathlib import Path
+import requests
 
 
 def set_greeting() -> str:
@@ -22,7 +22,6 @@ def set_greeting() -> str:
     logging.info(f"Текущее время: {current_hour} часов. Выбрано приветствие: '{greeting}'")
 
     return greeting
-
 
 
 def set_cards_dicts(exsel_file_path):
@@ -91,17 +90,9 @@ def set_five_trans_dicts(excel_file_path):
     return top5_transactions
 
 
-
-
-
-
-
-
-
-
 def set_currency_rates_dicts():
     """Функция курса валют, формирует словари по ключу currency_rates_dicts"""
-    pass
+
 
 
 def set_stock_prices_dicts():

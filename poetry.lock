@@ -324,6 +324,20 @@ files = [
 colors = ["colorama (>=0.4.6)"]
 
 [[package]]
+name = "load-dotenv"
+version = "0.1.0"
+description = "Automatically and implicitly load environment variables from .env file"
+optional = false
+python-versions = "*"
+files = [
+    {file = "load-dotenv-0.1.0.tar.gz", hash = "sha256:bbe5f40072d4a61eadca66de6c222df5a2d935d6d41b703be1ff75396f635145"},
+    {file = "load_dotenv-0.1.0-py3-none-any.whl", hash = "sha256:614803f720153fb8a5f97124a72aaa3930a67aa5547cbe8603d01ea7f9ac1adf"},
+]
+
+[package.dependencies]
+python-dotenv = "*"
+
+[[package]]
 name = "mccabe"
 version = "0.7.0"
 description = "McCabe checker, plugin for flake8"
@@ -536,6 +550,19 @@ files = [
 cli = ["click (>=5.0)"]
 
 [[package]]
+name = "req"
+version = "1.0.0"
+description = "Simple format for serialization, similar to json.  Not useful for most general use."
+optional = false
+python-versions = "*"
+files = [
+    {file = "req-1.0.0-py2.py3-none-any.whl", hash = "sha256:9ee30b71347cef7dba1eb4a0132586b88828d8249cf2f7e606de5ac44810367e"},
+]
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "requests"
 version = "2.32.3"
 description = "Python HTTP for Humans."
@@ -555,6 +582,17 @@ urllib3 = ">=1.21.1,<3"
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
+
+[[package]]
+name = "six"
+version = "1.16.0"
+description = "Python 2 and 3 compatibility utilities"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+files = [
+    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
+    {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
+]
 
 [[package]]
 name = "typing-extensions"
@@ -587,4 +625,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "b0e757f791cb952e603a274fea8276f7360dfa7d2ecd1c3e8c10e87bfa29bceb"
+content-hash = "321e338d2c8947ab7b0c2c69d3ce5a1b34a5b141a581977a61fee2c54408823c"
