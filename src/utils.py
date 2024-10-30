@@ -71,12 +71,11 @@ def set_five_trans_dicts(excel_file_path):
 
     top5_transactions = []
 
-    # Сбор всех транзакций в список
     for index, row in df.iterrows():
-        date = str(row["Дата платежа"])  # Используем правильное название столбца
-        amount = float(row["Сумма операции"])  # Используем правильное название столбца
-        category = str(row["Категория"])  # Используем правильное название столбца
-        description = str(row["Описание"])  # Используем правильное название столбца
+        date = str(row["Дата платежа"])
+        amount = float(row["Сумма операции"])
+        category = str(row["Категория"])
+        description = str(row["Описание"])
 
         info_top5 = {
             "date": date,
@@ -87,7 +86,6 @@ def set_five_trans_dicts(excel_file_path):
 
         top5_transactions.append(info_top5)
 
-    # Сортировка транзакций по сумме и выбор ТОП 5
     top5_transactions = sorted(top5_transactions, key=lambda x: x["amount"], reverse=True)[:5]
 
     return top5_transactions
