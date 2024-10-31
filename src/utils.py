@@ -5,6 +5,7 @@ import logging
 import requests
 from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 load_dotenv()
@@ -14,8 +15,9 @@ import pandas as pd
 
 
 def set_greeting() -> str:
-    """Функция формирует строку приветствия и вносит значение по ключу greeting"""
-    current_hour = datetime.datetime.now().hour
+    """Функция формирует строку приветствия и логирует текущее время и дату"""
+    current_time = datetime.datetime.now()  # Получаем текущее время и дату
+    current_hour = current_time.hour
     greeting = ""
 
     if 0 <= current_hour < 6:
@@ -27,9 +29,14 @@ def set_greeting() -> str:
     else:
         greeting = "Добрый вечер"
 
-    logging.info(f"Текущее время: {current_hour} часов. Выбрано приветствие: '{greeting}'")
+    # Логируем текущее время и выбранное приветствие
+    logging.info(
+        f"Текущая дата и время: {current_time.strftime('%Y-%m-%d %H:%M:%S')}. Выбрано приветствие: '{greeting}'")
 
-    return greeting
+    # Формируем строку с приветствием и текущей датой и временем
+    result_message: str = f"{greeting} (Текущая дата и время: {current_time.strftime('%Y-%m-%d %H:%M:%S')})"
+
+    return result_message
 
 
 def set_cards_dicts(exsel_file_path):
@@ -144,7 +151,5 @@ def set_currency_rates_dicts(info_currency):
         print(f"We have a problem with currency, Watson: {e}")
 
 
-
-def set_stock_prices_dicts():
+def set_stock_prices_dicts(info_stocks):
     """Функция стоимости акций, формирует словари по ключу stock_prices"""
-    pass
