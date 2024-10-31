@@ -151,5 +151,32 @@ def set_currency_rates_dicts(info_currency):
         print(f"We have a problem with currency, Watson: {e}")
 
 
-def set_stock_prices_dicts(info_stocks):
+def stock_prices(info_stocks):
     """Функция стоимости акций, формирует словари по ключу stock_prices"""
+    try:
+        logger.info("Получение информации о ценах на акции")
+
+        data_json = {
+            "data": {
+                "trends": [
+                    {"name": "S&P 500", "price": 4500.50},
+                    {"name": "Dow Jones", "price": 34000.75},
+                    {"name": "NASDAQ", "price": 15000.25},
+                ]
+            }
+        }
+
+        info_stocks["stock_prices"] = [
+            {"stock": trend["name"], "price": trend["price"]}
+            for trend in data_json["data"]["trends"]
+        ]
+
+        return info_stocks
+
+    except Exception as e:
+        logger.error("Ошибка при выборе цен на акции.")
+        print(f"Проблема с акциями: {e}")
+        return info_stocks
+
+stock_info = {}
+
