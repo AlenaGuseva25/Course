@@ -2,7 +2,8 @@ from src.utils import set_greeting
 from src.utils import set_cards_dicts
 from src.utils import set_five_trans_dicts
 from src.utils import set_currency_rates_dicts
-from src.utils import stock_info, stock_prices
+from src.utils import stock_prices
+from src.views import main
 
 #if __name__ == "__main__":
  #   greeting_message = set_greeting()
@@ -28,3 +29,9 @@ from src.utils import stock_info, stock_prices
 #if __name__ == "__main__":
  #   updated_stock_info = stock_prices(stock_info)
   #  print(updated_stock_info)
+
+if __name__ == "__main__":
+    date_time_input = "2023-10-01 12:30:00"
+    excel_file_path = (r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx")
+    result_json = main(date_time_input, excel_file_path)
+    print(result_json)

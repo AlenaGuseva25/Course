@@ -6,12 +6,13 @@ import requests
 from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
+import pandas as pd
+from typing import Dict, List, Any
 
 load_dotenv()
 api_key = os.getenv("API_KEY")
 
-import pandas as pd
+exsel_file_path = (r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx")
 
 
 def set_greeting() -> str:
@@ -39,78 +40,91 @@ def set_greeting() -> str:
     return result_message
 
 
-def set_cards_dicts(exsel_file_path):
+def set_cards_dicts(excel_file_path: str) -> Dict[str, Any]:
     """Функция формирует словарь по картам пользователя и вносит значение по ключу cards"""
-    logging.info("Обработка файла: %d", exsel_file_path)
+    logging.info("Обработка файла: %s", excel_file_path)
 
     try:
-        df = pd.read_excel(exsel_file_path)
+        df = pd.read_excel(excel_file_path)
         logging.info("Файл прочитан. Найдено %d строк.", len(df))
     except Exception as e:
-        logging.error("Ошибка чтения файла: %d", e)
+        logging.error("Ошибка чтения файла: %s", e)
         return {"error": "Ошибка чтения файла"}
 
-    cards_summary = []
-    total_expenses = 0.0
+    cards_summary: Dict[str, Dict[str, Any]] = {}
 
     for index, row in df.iterrows():
         try:
             last_digits = str(row["Номер карты"])[-4:]
             total_spent = float(row["Сумма операции"])
-            cashback = total_spent / 100.0
 
-            cards_info = {
-                "last_digits": last_digits,
-                "total_spent": total_spent,
-                "cashback": cashback
-            }
+            if last_digits in cards_summary:
+                cards_summary[last_digits]["total_spent"] += total_spent
+                cards_summary[last_digits]["cashback"] += total_spent / 100.0
+            else:
+                cards_summary[last_digits] = {
+                    "last_digits": last_digits,
+                    "total_spent": total_spent,
+                    "cashback": total_spent / 100.0
+                }
 
-            cards_summary.append(cards_info)
-            total_expenses += total_spent
-            logging.debug("Добавлена информация о карте: %d", cards_info)
-
+            logging.debug("Обновлена информация о карте: %s", cards_summary[last_digits])
 
         except KeyError as e:
             logging.error("Ошибка: отсутствует столбец %s в строке %d", e, index)
         except Exception as e:
             logging.error("Ошибка при обработке строки %d: %s", index, e)
 
-
-    logging.info("Обработка завершена. Найдено %d карт.", len(cards_summary))
-    return {"cards": cards_summary, "total_expenses" : total_expenses}
-
-
-
-def set_five_trans_dicts(excel_file_path):
-    """Функция формирует ТОП 5 словарей (по сумме платежа) по ключу top_transactions"""
-    df = pd.read_excel(excel_file_path)
-
-    top5_transactions = []
-
-    for index, row in df.iterrows():
-        date = str(row["Дата платежа"])
-        amount = float(row["Сумма операции"])
-        category = str(row["Категория"])
-        description = str(row["Описание"])
-
-        info_top5 = {
-            "date": date,
-            "amount": amount,
-            "category": category,
-            "description": description
+    if cards_summary:
+        first_card = next(iter(cards_summary.values()))
+        return {
+            "cards": [first_card],
+            "total_expenses": first_card["total_spent"]
+        }
+    else:
+        return {
+            "cards": [],
+            "total_expenses": 0.0
         }
 
-        top5_transactions.append(info_top5)
-
-    top5_transactions = sorted(top5_transactions, key=lambda x: x["amount"], reverse=True)[:5]
-
-    return top5_transactions
 
 
-def set_currency_rates_dicts(info_currency):
-    """Функция курса валют, формирует словари по ключу currency_rates_dicts"""
+def set_five_trans_dicts(excel_file_path: str) -> List[Dict[str, Any]]:
+    """Функция формирует ТОП 5 словарей (по сумме платежа) по ключу top_transactions"""
     try:
-        logger.info("Запрос курсов валют USD и EUR...")
+        df = pd.read_excel(excel_file_path)
+
+        required_columns = ["Дата платежа", "Сумма операции", "Категория", "Описание"]
+        if not all(col in df.columns for col in required_columns):
+            raise ValueError("Отсутствуют необходимые столбцы в данных")
+
+        transactions = df[required_columns].copy()
+        transactions["Сумма операции"] = transactions["Сумма операции"].astype(float)
+
+        top5_transactions = transactions.nlargest(5, "Сумма операции")
+
+        result = [
+            {
+                "date": row["Дата платежа"].strftime("%d.%m.%Y") if isinstance(row["Дата платежа"], pd.Timestamp) else
+                str(row["Дата платежа"]),
+                "amount": round(row["Сумма операции"], 2),
+                "category": row["Категория"],
+                "description": row["Описание"],
+            }
+            for index, row in top5_transactions.iterrows()
+        ]
+
+        return result
+
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+        return []
+
+
+def set_currency_rates_dicts(info_currency: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Функция курса валют, формирует словари по ключу currency_rates"""
+    try:
+        logging.info("Запрос курсов валют USD и EUR...")
 
         api_key = os.getenv("API_KEY")
         headers_curr = {"apikey": api_key}
@@ -131,7 +145,7 @@ def set_currency_rates_dicts(info_currency):
                 "rate": new_amount_usd['rates']['RUB']
             })
         else:
-            logger.error("Ошибка в ответе для USD: %s", new_amount_usd)
+            logging.error("Ошибка в ответе для USD: %s", new_amount_usd)
             return None
 
         if 'rates' in new_amount_eur and 'RUB' in new_amount_eur['rates']:
@@ -140,28 +154,33 @@ def set_currency_rates_dicts(info_currency):
                 "rate": new_amount_eur['rates']['RUB']
             })
         else:
-            logger.error("Ошибка в ответе для EUR: %s", new_amount_eur)
+            logging.error("Ошибка в ответе для EUR: %s", new_amount_eur)
             return None
 
-        logger.info("Курсы валют успешно получены.")
-        return info_currency
+        logging.info("Курсы валют успешно получены.")
+        return info_currency["currency_rates"]
 
     except Exception as e:
-        logger.error("Everybody has problems with currency now...")
-        print(f"We have a problem with currency, Watson: {e}")
+        logging.error("Ошибка получения курсов валют.")
+        print(f"Проблема с курсами валют: {e}")
+        return []
 
 
-def stock_prices(info_stocks):
+
+def stock_prices() -> List[Dict[str, Any]]:
     """Функция стоимости акций, формирует словари по ключу stock_prices"""
+    info_stocks = {"stock_prices": []}
     try:
-        logger.info("Получение информации о ценах на акции")
+        logging.info("Получение информации о ценах на акции")
 
         data_json = {
             "data": {
                 "trends": [
-                    {"name": "S&P 500", "price": 4500.50},
-                    {"name": "Dow Jones", "price": 34000.75},
-                    {"name": "NASDAQ", "price": 15000.25},
+                    {"name": "AAPL", "price": 150.12},
+                    {"name": "AMZN", "price": 3173.18},
+                    {"name": "GOOGL", "price": 2742.39},
+                    {"name": "MSFT", "price": 296.71},
+                    {"name": "TSLA", "price": 1007.08},
                 ]
             }
         }
@@ -171,12 +190,10 @@ def stock_prices(info_stocks):
             for trend in data_json["data"]["trends"]
         ]
 
-        return info_stocks
+        return info_stocks["stock_prices"]
 
     except Exception as e:
-        logger.error("Ошибка при выборе цен на акции.")
+        logging.error("Ошибка при получении цен на акции.")
         print(f"Проблема с акциями: {e}")
-        return info_stocks
-
-stock_info = {}
+        return []
 
