@@ -1,8 +1,7 @@
 import datetime
 import logging
-import json
+
 import pandas as pd
-import requests
 
 
 def set_greeting() -> str:
@@ -36,6 +35,7 @@ def set_cards_dicts(exsel_file_path):
         return {"error": "Ошибка чтения файла"}
 
     cards_summary = []
+    total_expenses = 0.0
 
     for index, row in df.iterrows():
         try:
@@ -50,6 +50,7 @@ def set_cards_dicts(exsel_file_path):
             }
 
             cards_summary.append(cards_info)
+            total_expenses += total_spent
             logging.debug("Добавлена информация о карте: %d", cards_info)
 
 
@@ -60,7 +61,7 @@ def set_cards_dicts(exsel_file_path):
 
 
     logging.info("Обработка завершена. Найдено %d карт.", len(cards_summary))
-    return {"cards": cards_summary}
+    return {"cards": cards_summary, "total_expenses" : total_expenses}
 
 
 
