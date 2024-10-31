@@ -1,5 +1,14 @@
+import json
+import os
 import datetime
 import logging
+import requests
+from dotenv import load_dotenv
+logger = logging.getLogger(__name__)
+
+
+load_dotenv()
+api_key = os.getenv("API_KEY")
 
 import pandas as pd
 
@@ -91,8 +100,48 @@ def set_five_trans_dicts(excel_file_path):
     return top5_transactions
 
 
-def set_currency_rates_dicts():
+def set_currency_rates_dicts(info_currency):
     """Функция курса валют, формирует словари по ключу currency_rates_dicts"""
+    try:
+        logger.info("Запрос курсов валют USD и EUR...")
+
+        api_key = os.getenv("API_KEY")
+        headers_curr = {"apikey": api_key}
+
+        url_usd = "https://api.apilayer.com/exchangerates_data/latest?symbols=RUB&base=USD"
+        result_usd = requests.get(url_usd, headers=headers_curr)
+        result_usd.raise_for_status()
+        new_amount_usd = result_usd.json()
+
+        url_eur = "https://api.apilayer.com/exchangerates_data/latest?symbols=RUB&base=EUR"
+        result_eur = requests.get(url_eur, headers=headers_curr)
+        result_eur.raise_for_status()
+        new_amount_eur = result_eur.json()
+
+        if 'rates' in new_amount_usd and 'RUB' in new_amount_usd['rates']:
+            info_currency["currency_rates"].append({
+                "currency": "USD",
+                "rate": new_amount_usd['rates']['RUB']
+            })
+        else:
+            logger.error("Ошибка в ответе для USD: %s", new_amount_usd)
+            return None
+
+        if 'rates' in new_amount_eur and 'RUB' in new_amount_eur['rates']:
+            info_currency["currency_rates"].append({
+                "currency": "EUR",
+                "rate": new_amount_eur['rates']['RUB']
+            })
+        else:
+            logger.error("Ошибка в ответе для EUR: %s", new_amount_eur)
+            return None
+
+        logger.info("Курсы валют успешно получены.")
+        return info_currency
+
+    except Exception as e:
+        logger.error("Everybody has problems with currency now...")
+        print(f"We have a problem with currency, Watson: {e}")
 
 
 
