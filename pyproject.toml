@@ -23,6 +23,7 @@ mypy = "^1.11.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest-cov = "^6.0.0"
+flake8 = "^7.1.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -52,3 +53,6 @@ max-line-length = 119
 disallow_untyped_defs = true
 warn_return_any = true
 exclude = 'venv'
+
+[flake8]
+max-line-length = 119

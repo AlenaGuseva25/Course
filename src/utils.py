@@ -1,13 +1,13 @@
-import json
+from typing import Dict, List, Any
 import os
 import datetime
 import logging
 import requests
+import pandas as pd
 from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-import pandas as pd
-from typing import Dict, List, Any
+
 
 load_dotenv()
 api_key = os.getenv("API_KEY")
@@ -88,7 +88,6 @@ def set_cards_dicts(excel_file_path: str) -> Dict[str, Any]:
         }
 
 
-
 def set_five_trans_dicts(excel_file_path: str) -> List[Dict[str, Any]]:
     """Функция формирует ТОП 5 словарей (по сумме платежа) по ключу top_transactions"""
     try:
@@ -166,7 +165,6 @@ def set_currency_rates_dicts(info_currency: Dict[str, Any]) -> List[Dict[str, An
         return []
 
 
-
 def stock_prices() -> List[Dict[str, Any]]:
     """Функция стоимости акций, формирует словари по ключу stock_prices"""
     info_stocks = {"stock_prices": []}
@@ -196,4 +194,3 @@ def stock_prices() -> List[Dict[str, Any]]:
         logging.error("Ошибка при получении цен на акции.")
         print(f"Проблема с акциями: {e}")
         return []
-
