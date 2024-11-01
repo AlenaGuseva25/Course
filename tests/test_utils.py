@@ -40,3 +40,4 @@ def test_set_greeting_night():
             mock_logging.assert_called_once_with(
                 "Текущая дата и время: 2023-01-01 02:00:00. Выбрано приветствие: 'Доброй ночи'"
             )
+
