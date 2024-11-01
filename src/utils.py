@@ -192,16 +192,3 @@ def stock_prices() -> List[Dict[str, Any]]:
         logging.error("Ошибка при получении цен на акции.")
         print(f"Проблема с акциями: {e}")
         return []
-
-
-def filter_data(data: pd.DataFrame, year: int, month: int) -> pd.DataFrame:
-    """Фильтрует данные по году и месяцу."""
-    logging.info(f"Фильтрация данных для {year}-{month}")
-    data['Дата операции'] = pd.to_datetime(data['Дата операции'], format='%d.%m.%Y %H:%M:%S')
-    return data[(data['Дата операции'].dt.year == year) & (data['Дата операции'].dt.month == month)]
-
-
-def group_by_category(filtered_data: pd.DataFrame) -> Dict[str, float]:
-    """Группирует данные по категориям и суммирует кешбэк."""
-    logging.info("Группировка данных по категориям")
-    return filtered_data.groupby('Категория')['Сумма операции'].sum().to_dict()
