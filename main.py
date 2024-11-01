@@ -5,7 +5,7 @@ from src.utils import set_five_trans_dicts
 from src.utils import set_currency_rates_dicts
 from src.utils import stock_prices
 from src.views import main
-from src.reports import get_average_spending_by_days
+from src.reports import get_average_spending_by_days, get_average_spending_by_weekday
 
 #if __name__ == "__main__":
  #   greeting_message = set_greeting()
@@ -42,7 +42,13 @@ excel_file_path = r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx"
 
 transactions = pd.read_excel(excel_file_path)
 
+#if __name__ == "__main__":
+ #   category = "Супермаркеты"
+  #  average_spending_report = get_average_spending_by_days(transactions, category)
+   # print(average_spending_report)
+
+
 if __name__ == "__main__":
-    category = "Супермаркеты"
-    average_spending_report = get_average_spending_by_days(transactions, category)
-    print(average_spending_report)
+    average_spending_per_weekday = get_average_spending_by_weekday(transactions, "01.10.2021 00:00:00")
+    print("Средние траты по дням недели:")
+    print(average_spending_per_weekday)
