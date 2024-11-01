@@ -30,11 +30,9 @@ def set_greeting() -> str:
     else:
         greeting = "Добрый вечер"
 
-    # Логируем текущее время и выбранное приветствие
     logging.info(
         f"Текущая дата и время: {current_time.strftime('%Y-%m-%d %H:%M:%S')}. Выбрано приветствие: '{greeting}'")
 
-    # Формируем строку с приветствием и текущей датой и временем
     result_message: str = f"{greeting} (Текущая дата и время: {current_time.strftime('%Y-%m-%d %H:%M:%S')})"
 
     return result_message

@@ -1,9 +1,11 @@
+import pandas as pd
 from src.utils import set_greeting
 from src.utils import set_cards_dicts
 from src.utils import set_five_trans_dicts
 from src.utils import set_currency_rates_dicts
 from src.utils import stock_prices
 from src.views import main
+from src.reports import get_average_spending_by_days
 
 #if __name__ == "__main__":
  #   greeting_message = set_greeting()
@@ -30,8 +32,17 @@ from src.views import main
  #   updated_stock_info = stock_prices(stock_info)
   #  print(updated_stock_info)
 
+#if __name__ == "__main__":
+#    date_time_input = "2023-10-01 12:30:00"
+#    excel_file_path = (r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx")
+#    result_json = main(date_time_input, excel_file_path)
+#   print(result_json)
+
+excel_file_path = r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx"
+
+transactions = pd.read_excel(excel_file_path)
+
 if __name__ == "__main__":
-    date_time_input = "2023-10-01 12:30:00"
-    excel_file_path = (r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx")
-    result_json = main(date_time_input, excel_file_path)
-    print(result_json)
+    category = "Супермаркеты"
+    average_spending_report = get_average_spending_by_days(transactions, category)
+    print(average_spending_report)
