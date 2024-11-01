@@ -115,7 +115,6 @@ def get_average_spending_by_weekday(transactions: pd.DataFrame, date: Optional[s
     reports_logger.info("Преобразование даты транзакции")
     edit_df["Дата операции"] = pd.to_datetime(edit_df["Дата операции"], format="%d.%m.%Y %H:%M:%S", errors='coerce')
 
-    # Установка даты
     if date is None:
         end_date_obj = datetime.datetime.now().date()
         reports_logger.info("Дата не указана, используется текущая дата.")
@@ -130,7 +129,6 @@ def get_average_spending_by_weekday(transactions: pd.DataFrame, date: Optional[s
     start_date_obj = end_date_obj - datetime.timedelta(days=90)
     reports_logger.info(f"Диапазон дат: с {start_date_obj} по {end_date_obj}.")
 
-    # Фильтрация по дате
     report_df = edit_df[(edit_df["Дата операции"].dt.date <= end_date_obj) &
                         (edit_df["Дата операции"].dt.date >= start_date_obj)]
 
