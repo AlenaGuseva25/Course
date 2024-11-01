@@ -6,6 +6,7 @@ from src.utils import set_currency_rates_dicts
 from src.utils import stock_prices
 from src.views import main
 from src.reports import get_average_spending_by_weekday
+from src.services import analyze_cashback_categories
 
 #if __name__ == "__main__":
  #   greeting_message = set_greeting()
@@ -53,7 +54,14 @@ transactions = pd.read_excel(excel_file_path)
   #  print("Средние траты по дням недели:")
    # print(average_spending_per_weekday)
 
+#if __name__ == "__main__":
+ #   average_spending = get_average_spending_by_weekday(transactions)
+  #  print("Средние траты по дням недели за последние 3 месяца:")
+   # print(average_spending)
+
 if __name__ == "__main__":
-    average_spending = get_average_spending_by_weekday(transactions)
-    print("Средние траты по дням недели за последние 3 месяца:")
-    print(average_spending)
+    year = 2021  # Определите год
+    month = 12  # Определите месяц
+    analysis = analyze_cashback_categories(transactions, year, month)
+    print("Анализ кешбэка по категориям:")
+    print(analysis)
