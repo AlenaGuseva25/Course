@@ -60,8 +60,8 @@ transactions = pd.read_excel(excel_file_path)
    # print(average_spending)
 
 if __name__ == "__main__":
-    year = 2021  # Определите год
-    month = 12  # Определите месяц
+    year = 2021
+    month = 12
     analysis = analyze_cashback_categories(transactions, year, month)
     print("Анализ кешбэка по категориям:")
     print(analysis)

@@ -163,28 +163,29 @@ def set_currency_rates_dicts(info_currency: Dict[str, Any]) -> List[Dict[str, An
         return []
 
 
-def stock_prices() -> List[Dict[str, Any]]:
+def stock_prices(STOCKS: List[str]) -> List[Dict[str, Any]]:
     """Функция стоимости акций, формирует словари по ключу stock_prices"""
     info_stocks = {"stock_prices": []}
     try:
         logging.info("Получение информации о ценах на акции")
 
-        data_json = {
-            "data": {
-                "trends": [
-                    {"name": "AAPL", "price": 150.12},
-                    {"name": "AMZN", "price": 3173.18},
-                    {"name": "GOOGL", "price": 2742.39},
-                    {"name": "MSFT", "price": 296.71},
-                    {"name": "TSLA", "price": 1007.08},
-                ]
-            }
-        }
+        api_key = os.getenv("API_KEY")
+        headers_curr = {"apikey": api_key}
 
-        info_stocks["stock_prices"] = [
-            {"stock": trend["name"], "price": trend["price"]}
-            for trend in data_json["data"]["trends"]
-        ]
+        for stock in STOCKS:
+            url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={stock}&apikey={api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+
+            data_json = response.json()
+
+            if "Time Series (Daily)" in data_json:
+                last_date = next(iter(data_json["Time Series (Daily)"]))
+                last_price = float(data_json["Time Series (Daily)"][last_date]["4. close"])
+
+                info_stocks["stock_prices"].append({"stock": stock, "price": last_price})
+            else:
+                logging.warning(f"Нет данных для акции: {stock}")
 
         return info_stocks["stock_prices"]
 
