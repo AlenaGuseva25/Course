@@ -147,3 +147,47 @@ class TestSetCurrencyRatesDicts(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class TestSetFiveTransDicts(unittest.TestCase):
+
+    @patch('src.utils.pd.read_excel')
+    def test_set_five_trans_dicts_success(self, mock_read_excel):
+        # Создаем тестовый DataFrame
+        data = {
+            "Дата платежа": [pd.Timestamp('2023-01-01'), pd.Timestamp('2023-01-02'), pd.Timestamp('2023-01-03'),
+                             pd.Timestamp('2023-01-04'), pd.Timestamp('2023-01-05'), pd.Timestamp('2023-01-06')],
+            "Сумма операции": [100.50, 200.75, 50.00, 300.00, 150.25, 400.00],
+            "Категория": ["Food", "Transport", "Entertainment", "Food", "Transport", "Entertainment"],
+            "Описание": ["Lunch", "Bus ticket", "Movie", "Dinner", "Taxi", "Concert"]
+        }
+        mock_df = pd.DataFrame(data)
+        mock_read_excel.return_value = mock_df
+
+        # Вызов тестируемой функции
+        result = set_five_trans_dicts("dummy_path.xlsx")
+
+        # Проверка результата
+        expected_result = [
+            {"date": "06.01.2023", "amount": 400.00, "category": "Entertainment", "description": "Concert"},
+            {"date": "04.01.2023", "amount": 300.00, "category": "Food", "description": "Dinner"},
+            {"date": "02.01.2023", "amount": 200.75, "category": "Transport", "description": "Bus ticket"},
+            {"date": "05.01.2023", "amount": 150.25, "category": "Transport", "description": "Taxi"},
+            {"date": "01.01.2023", "amount": 100.50, "category": "Food", "description": "Lunch"},
+        ]
+
+        self.assertEqual(result, expected_result)
+
+
+    @patch('src.utils.pd.read_excel')
+    def test_set_five_trans_dicts_empty_data(self, mock_read_excel):
+        # Создаем пустой DataFrame
+        mock_read_excel.return_value = pd.DataFrame(columns=["Дата платежа", "Сумма операции", "Категория", "Описание"])
+
+        # Вызов тестируемой функции
+        result = set_five_trans_dicts("dummy_path.xlsx")
+
+        # Проверка результата
+        self.assertEqual(result, [])
+
+if __name__ == '__main__':
+    unittest.main()
