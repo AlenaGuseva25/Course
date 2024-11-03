@@ -81,4 +81,3 @@ def get_average_spending_by_weekday(transactions: pd.DataFrame, user_date: Optio
 
     reports_logger.info(f"Средние траты по дням недели:\n{average_spending}")
     return average_spending
-
