@@ -2,8 +2,9 @@ import os
 import pandas as pd
 import datetime
 import logging
-from typing import Optional
+from typing import Optional, Tuple, Any
 
+from pandas import Series
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 reports_logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ def report_decorator(file_name=None):
     return decorator
 
 
-def get_average_spending_by_weekday(transactions: pd.DataFrame, user_date: Optional[str] = None) -> pd.Series:
+def get_average_spending_by_weekday(transactions: pd.DataFrame, user_date: Optional[str] = None) -> tuple[Series] | Any:
     """Функция вычисляет средние траты по дням недели за последние 3 месяца от заданной даты"""
 
     columns_to_drop = [
