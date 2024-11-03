@@ -9,19 +9,23 @@ from pandas import Series
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 reports_logger = logging.getLogger(__name__)
 
+
 def report_decorator(file_name=None):
-    """Декоратор, который записывает результат функции-отчета в файл"""
+    """Декоратор, который записывает результат функции-отчета в файл в формате JSON"""
+
     def decorator(func):
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
             if file_name:
                 file_path = file_name
             else:
-                file_path = f"report_{func.__name__}_{datetime.date.today().isoformat()}.csv"
-            result.to_csv(file_path, index=True)
+                file_path = f"report_{func.__name__}_{datetime.date.today().isoformat()}.json"
+            result.to_json(file_path, orient='columns')
             reports_logger.info(f"Отчет сохранен в файл {file_path}")
             return result
+
         return wrapper
+
     return decorator
 
 
