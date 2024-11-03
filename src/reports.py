@@ -24,7 +24,7 @@ def report_decorator(file_name=None):
     return decorator
 
 
-def get_average_spending_by_weekday(transactions: pd.DataFrame, date: Optional[str] = None) -> pd.Series:
+def get_average_spending_by_weekday(transactions: pd.DataFrame, user_date: Optional[str] = None) -> pd.Series:
     """Функция вычисляет средние траты по дням недели за последние 3 месяца от заданной даты"""
 
     columns_to_drop = [
@@ -48,12 +48,12 @@ def get_average_spending_by_weekday(transactions: pd.DataFrame, date: Optional[s
     reports_logger.info("Преобразование даты транзакции")
     edit_df["Дата операции"] = pd.to_datetime(edit_df["Дата операции"], format="%d.%m.%Y %H:%M:%S", errors='coerce')
 
-    if date is None:
+    if user_date is None:
         end_date_obj = datetime.datetime.now().date()
         reports_logger.info("Дата не указана, используется текущая дата.")
     else:
         try:
-            end_date_obj = datetime.datetime.strptime(date, "%d.%m.%Y %H:%M:%S").date()
+            end_date_obj = datetime.datetime.strptime(user_date, "%d.%m.%Y %H:%M:%S").date()
             reports_logger.info(f"Используемая дата: {end_date_obj}")
         except ValueError as ve:
             reports_logger.error(f"Некорректный формат даты: {ve}")
