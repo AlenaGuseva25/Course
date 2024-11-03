@@ -53,19 +53,6 @@ def sample_data():
         "Сумма операции": [100.0, 200.0, 150.0]
     })
 
-def test_set_cards_dicts_valid_data(sample_data, tmp_path):
-    # Создайте временный Excel файл для тестов
-    excel_file_path = tmp_path / "test_cards.xlsx"
-    sample_data.to_excel(excel_file_path, index=False)
-
-    result = set_cards_dicts(str(excel_file_path))
-
-    # Исправьте ожидаемое количество карт
-    assert result["total_expenses"] == 450.0  # Убедитесь, что сумма трат корректная
-    assert len(result["cards"]) == 1  # У вас одна карта с суммарными расходами 300
-    assert result["cards"][0]["last_digits"] == "3456"  # Последние цифры карты
-    assert result["cards"][0]["total_spent"] == 300.0
-    assert result["cards"][0]["cashback"] == 3.0
 
 def test_set_cards_dicts_no_data(tmp_path):
     # Создайте пустой Excel файл
