@@ -58,8 +58,3 @@ class TestGetAverageSpendingByWeekday(unittest.TestCase):
 
         with self.assertRaises(ValueError) as context:
             get_average_spending_by_weekday(self.transactions_df, user_date)
-
-
-
-
-
