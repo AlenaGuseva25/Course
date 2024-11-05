@@ -5,14 +5,15 @@ import logging
 import requests
 import pandas as pd
 from dotenv import load_dotenv
+
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 load_dotenv()
 api_key = os.getenv("API_KEY")
 
-exsel_file_path = (r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx")
+exsel_file_path = r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx"
 
 
 def set_greeting() -> str:
@@ -31,7 +32,8 @@ def set_greeting() -> str:
         greeting = "Добрый вечер"
 
     logging.info(
-        f"Текущая дата и время: {current_time.strftime('%Y-%m-%d %H:%M:%S')}. Выбрано приветствие: '{greeting}'")
+        f"Текущая дата и время: {current_time.strftime('%Y-%m-%d %H:%M:%S')}. Выбрано приветствие: '{greeting}'"
+    )
 
     result_message: str = f"{greeting} (Текущая дата и время: {current_time.strftime('%Y-%m-%d %H:%M:%S')})"
 
@@ -63,7 +65,7 @@ def set_cards_dicts(excel_file_path: str) -> Dict[str, Any]:
                 cards_summary[last_digits] = {
                     "last_digits": last_digits,
                     "total_spent": total_spent,
-                    "cashback": total_spent / 100.0
+                    "cashback": total_spent / 100.0,
                 }
 
             logging.debug("Обновлена информация о карте: %s", cards_summary[last_digits])
@@ -75,15 +77,9 @@ def set_cards_dicts(excel_file_path: str) -> Dict[str, Any]:
 
     if cards_summary:
         first_card = next(iter(cards_summary.values()))
-        return {
-            "cards": [first_card],
-            "total_expenses": first_card["total_spent"]
-        }
+        return {"cards": [first_card], "total_expenses": first_card["total_spent"]}
     else:
-        return {
-            "cards": [],
-            "total_expenses": 0.0
-        }
+        return {"cards": [], "total_expenses": 0.0}
 
 
 def set_five_trans_dicts(excel_file_path: str) -> List[Dict[str, Any]]:
@@ -102,8 +98,11 @@ def set_five_trans_dicts(excel_file_path: str) -> List[Dict[str, Any]]:
 
         result = [
             {
-                "date": row["Дата платежа"].strftime("%d.%m.%Y") if isinstance(row["Дата платежа"], pd.Timestamp) else
-                str(row["Дата платежа"]),
+                "date": (
+                    row["Дата платежа"].strftime("%d.%m.%Y")
+                    if isinstance(row["Дата платежа"], pd.Timestamp)
+                    else str(row["Дата платежа"])
+                ),
                 "amount": round(row["Сумма операции"], 2),
                 "category": row["Категория"],
                 "description": row["Описание"],
@@ -136,20 +135,14 @@ def set_currency_rates_dicts(info_currency: Dict[str, Any]) -> List[Dict[str, An
         result_eur.raise_for_status()
         new_amount_eur = result_eur.json()
 
-        if 'rates' in new_amount_usd and 'RUB' in new_amount_usd['rates']:
-            info_currency["currency_rates"].append({
-                "currency": "USD",
-                "rate": new_amount_usd['rates']['RUB']
-            })
+        if "rates" in new_amount_usd and "RUB" in new_amount_usd["rates"]:
+            info_currency["currency_rates"].append({"currency": "USD", "rate": new_amount_usd["rates"]["RUB"]})
         else:
             logging.error("Ошибка в ответе для USD: %s", new_amount_usd)
             return None
 
-        if 'rates' in new_amount_eur and 'RUB' in new_amount_eur['rates']:
-            info_currency["currency_rates"].append({
-                "currency": "EUR",
-                "rate": new_amount_eur['rates']['RUB']
-            })
+        if "rates" in new_amount_eur and "RUB" in new_amount_eur["rates"]:
+            info_currency["currency_rates"].append({"currency": "EUR", "rate": new_amount_eur["rates"]["RUB"]})
         else:
             logging.error("Ошибка в ответе для EUR: %s", new_amount_eur)
             return None

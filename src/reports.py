@@ -1,12 +1,11 @@
-import os
 import pandas as pd
 import datetime
 import logging
-from typing import Optional, Tuple, Any
+from typing import Optional, Any
 
 from pandas import Series
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 reports_logger = logging.getLogger(__name__)
 
 
@@ -20,7 +19,7 @@ def report_decorator(file_name=None):
                 file_path = file_name
             else:
                 file_path = f"report_{func.__name__}_{datetime.date.today().isoformat()}.json"
-            result.to_json(file_path, orient='columns')
+            result.to_json(file_path, orient="columns")
             reports_logger.info(f"Отчет сохранен в файл {file_path}")
             return result
 
@@ -29,7 +28,9 @@ def report_decorator(file_name=None):
     return decorator
 
 
-def get_average_spending_by_weekday(transactions: pd.DataFrame, user_date: Optional[str] = None) -> tuple[Series] | Any:
+def get_average_spending_by_weekday(
+    transactions: pd.DataFrame, user_date: Optional[str] = None
+) -> tuple[Series] | Any:
     """Функция вычисляет средние траты по дням недели за последние 3 месяца от заданной даты"""
 
     columns_to_drop = [
@@ -48,10 +49,10 @@ def get_average_spending_by_weekday(transactions: pd.DataFrame, user_date: Optio
     ]
 
     reports_logger.info("Удаление ненужных данных из DataFrame")
-    edit_df = transactions.drop(columns=columns_to_drop, errors='ignore')
+    edit_df = transactions.drop(columns=columns_to_drop, errors="ignore")
 
     reports_logger.info("Преобразование даты транзакции")
-    edit_df["Дата операции"] = pd.to_datetime(edit_df["Дата операции"], format="%d.%m.%Y %H:%M:%S", errors='coerce')
+    edit_df["Дата операции"] = pd.to_datetime(edit_df["Дата операции"], format="%d.%m.%Y %H:%M:%S", errors="coerce")
 
     if user_date is None:
         end_date_obj = datetime.datetime.now().date()
@@ -67,14 +68,15 @@ def get_average_spending_by_weekday(transactions: pd.DataFrame, user_date: Optio
     start_date_obj = end_date_obj - datetime.timedelta(days=90)
     reports_logger.info(f"Диапазон дат: с {start_date_obj} по {end_date_obj}.")
 
-    report_df = edit_df[(edit_df["Дата операции"].dt.date <= end_date_obj) &
-                        (edit_df["Дата операции"].dt.date >= start_date_obj)]
+    report_df = edit_df[
+        (edit_df["Дата операции"].dt.date <= end_date_obj) & (edit_df["Дата операции"].dt.date >= start_date_obj)
+    ]
 
     reports_logger.info(f"Количество записей в выборке: {len(report_df)}")
 
     if report_df.empty:
         reports_logger.info("Нет записей за указанный период.")
-        return pd.Series(dtype=float).reindex(range(7)),
+        return (pd.Series(dtype=float).reindex(range(7)),)
 
     report_df["День недели"] = report_df["Дата операции"].dt.dayofweek  # Пн = 0, Вс = 6
     average_spending = report_df.groupby("День недели")["Сумма операции"].mean().reindex(range(7), fill_value=0)

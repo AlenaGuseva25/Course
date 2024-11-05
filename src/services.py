@@ -1,6 +1,5 @@
 import pandas as pd
 import json
-import datetime
 
 
 def analyze_cashback_categories(transactions, year, month):
@@ -11,7 +10,8 @@ def analyze_cashback_categories(transactions, year, month):
         raise ValueError("Ошибка при преобразовании даты: " + str(e))
 
     filtered_data = transactions[
-        (transactions["Дата операции"].dt.year == year) & (transactions["Дата операции"].dt.month == month)]
+        (transactions["Дата операции"].dt.year == year) & (transactions["Дата операции"].dt.month == month)
+    ]
 
     if filtered_data.empty:
         return json.dumps({}, ensure_ascii=False)
@@ -21,4 +21,3 @@ def analyze_cashback_categories(transactions, year, month):
     analysis = cashback_by_category.to_dict()
 
     return json.dumps(analysis, ensure_ascii=False)
-
