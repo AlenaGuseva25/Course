@@ -4,9 +4,8 @@ import unittest
 import pytest
 import requests
 import pandas as pd
-from unittest.mock import patch
 from freezegun import freeze_time
-
+from unittest.mock import patch, Mock
 
 
 from src.utils import set_greeting, set_cards_dicts, set_five_trans_dicts, set_currency_rates_dicts, stock_prices
@@ -191,3 +190,52 @@ class TestSetFiveTransDicts(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+@pytest.fixture
+def stock_list():
+    return ["AAPL", "GOOGL", "MSFT"]
+
+
+def test_stock_prices_success(stock_list):
+    mock_response = {
+        "Time Series (Daily)": {
+            "2023-10-10": {
+                "1. open": "145.00",
+                "2. high": "150.00",
+                "3. low": "144.00",
+                "4. close": "148.00",
+                "5. volume": "1000000"
+            }
+        }
+    }
+
+    with patch('requests.get') as mock_get:
+        mock_get.return_value = Mock(status_code=200, json=Mock(return_value=mock_response))
+
+        result = stock_prices(stock_list)
+
+        assert len(result) == 3
+        assert result[0] == {"stock": "AAPL", "price": 148.0}
+        assert result[1] == {"stock": "GOOGL", "price": 148.0}  # здесь можно подправить ответ для GOOGL
+        assert result[2] == {"stock": "MSFT", "price": 148.0}  # здесь можно подправить ответ для MSFT
+
+
+def test_stock_prices_no_data(stock_list):
+    mock_response = {}
+
+    with patch('requests.get') as mock_get:
+        mock_get.return_value = Mock(status_code=200, json=Mock(return_value=mock_response))
+
+        result = stock_prices(stock_list)
+
+        assert len(result) == 0
+
+
+def test_stock_prices_api_error(stock_list):
+    with patch('requests.get') as mock_get:
+        mock_get.side_effect = requests.exceptions.HTTPError("404 Client Error: Not Found")
+
+        result = stock_prices(stock_list)
+
+        assert len(result) == 0

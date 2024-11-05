@@ -1,3 +1,6 @@
+import json
+import logging
+
 import pandas as pd
 from src.utils import set_greeting
 from src.utils import set_cards_dicts
@@ -8,60 +11,44 @@ from src.views import main
 from src.reports import get_average_spending_by_weekday
 from src.services import analyze_cashback_categories
 
-#if __name__ == "__main__":
- #   greeting_message = set_greeting()
-  #  print(greeting_message)
-
-#if __name__ == "__main__":
- #   excel_file_path = (r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx")
-#
- #   summary = set_cards_dicts(excel_file_path)
-  #  print(summary)
-
-#if __name__ == "__main__":
- #   excel_file_path = r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx"
-  #  top_5 = set_five_trans_dicts(excel_file_path)
-   # print("ТОП 5 транзакций:", top_5)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-#if __name__ == "__main__":
- #   info_currency = {"currency_rates": []}
-  #  currency_info = set_currency_rates_dicts(info_currency)
-   # print(currency_info)
+def main(date_time_str: str, excel_file_path: str) -> str:
+    """Главная функция, принимающая дату и время, и возвращающая JSON-ответ"""
+    response = {}
 
-#if __name__ == "__main__":
- #   updated_stock_info = stock_prices(stock_info)
-  #  print(updated_stock_info)
+    logging.info("Запуск главной функции с параметрами: date_time_str=%s, excel_file_path=%s", date_time_str, excel_file_path)
 
-#if __name__ == "__main__":
-#    date_time_input = "2023-10-01 12:30:00"
-#    excel_file_path = (r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx")
-#    result_json = main(date_time_input, excel_file_path)
-#   print(result_json)
+    response["greeting"] = set_greeting()
+    logging.info("Приветствие установлено")
 
-excel_file_path = r"C:\Users\Alena\my_1\Course_paper\data\operations.xlsx"
+    logging.info("Установка данных по картам из файла: %s", excel_file_path)
+    response["cards"] = set_cards_dicts(excel_file_path)
+    logging.info("Данные по картам успешно установлены")
 
-transactions = pd.read_excel(excel_file_path)
+    logging.info("Установка топ-5 транзакций")
+    response["top_transactions"] = set_five_trans_dicts(excel_file_path)
+    logging.info("Топ-5 транзакций успешно установлены")
 
-#if __name__ == "__main__":
- #   category = "Супермаркеты"
-  #  average_spending_report = get_average_spending_by_days(transactions, category)
-   # print(average_spending_report)
+    logging.info("Установка курсов валют")
+    response["currency_rates"] = set_currency_rates_dicts({"currency_rates": []})
+    logging.info("Курсы валют успешно установлены")
 
+    logging.info("Получение цен на акции для: ['AAPL', 'GOOGL', 'MSFT']")
+    response["stock_prices"] = stock_prices(["AAPL", "GOOGL", "MSFT"])  # Пример акций, можно изменить
+    logging.info("Цены на акции успешно получены")
 
-#if __name__ == "__main__":
- #   average_spending_per_weekday = get_average_spending_by_weekday(transactions, "01.10.2021 00:00:00")
-  #  print("Средние траты по дням недели:")
-   # print(average_spending_per_weekday)
+    # Анализ кэшбэка
+    logging.info("Чтение транзакций из Excel-файла для анализа кэшбэка")
+    transactions_df = pd.read_excel(excel_file_path)  # Чтение транзакций из Excel
+    response["cashback_analysis"] = analyze_cashback_categories(transactions_df, 2023, 1)
+    logging.info("Анализ кэшбэка завершен")
 
-#if __name__ == "__main__":
- #   average_spending = get_average_spending_by_weekday(transactions)
-  #  print("Средние траты по дням недели за последние 3 месяца:")
-   # print(average_spending)
+    # Получение средних трат по дням недели
+    logging.info("Получение средних трат по дням недели")
+    response["average_spending_by_weekday"] = get_average_spending_by_weekday(transactions_df, date_time_str)
+    logging.info("Средние траты по дням недели успешно получены")
 
-if __name__ == "__main__":
-    year = 2021
-    month = 12
-    analysis = analyze_cashback_categories(transactions, year, month)
-    print("Анализ кешбэка по категориям:")
-    print(analysis)
+    logging.info("Завершение функции, возвращение JSON-ответа")
+    return json.dumps(response, ensure_ascii=False, indent=4)
